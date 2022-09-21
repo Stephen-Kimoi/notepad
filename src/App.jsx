@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Sidebar } from './components/Sidebar/Sidebar'
+import { useEffect, useState } from 'react'
+import Sidebar  from './components/Sidebar/Sidebar'
 import Editor from './components/Editor/Editor' 
 import { data } from './assets/data/data'
 import Split from 'react-split'
@@ -8,19 +8,24 @@ import './App.css'
 import "react-mde/lib/styles/css/react-mde-all.css";
 
 function App() {
-  const [notes, setNotes] = useState([]) 
+  let savedNotes = localStorage.getItem("notes") 
+
+  const [notes, setNotes] = useState( () => JSON.parse(savedNotes) || []) 
   const [currentNoteId, setCurrentNoteId] = useState( 
     (notes[0] && notes[0].id) || ""
   ) 
+
+  useEffect( () => {
+    localStorage.setItem("notes", JSON.stringify(notes)) 
+  }, [notes])
 
   function createNewNote() {
     const newNote = {
       id: nanoid(), 
       body: "# Type your markdown note's title here"
-    }
+    }**
     setNotes(prevNotes => [newNote, ...prevNotes]) 
     setCurrentNoteId(newNote.id) 
-    console.log(newNote.id)
   }
 
   function updateNote(text) {
